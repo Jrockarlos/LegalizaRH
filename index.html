@@ -7,27 +7,59 @@
 </head>
 <body>
     <h1>Bienvenido a la Plataforma de Selección</h1>
-    <p>Próximamente podrás cargar hojas de vida y evaluar candidatos.</p>
+    <p>Sube tu hoja de vida en formato PDF:</p>
+    
+    <input type="file" id="fileInput" accept=".pdf">
+    <button onclick="uploadFile()">Subir</button>
+    
+    <p id="status"></p>
 
-    <h2>Sube tu Hoja de Vida</h2>
-    <form id="cvForm">
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" name="nombre" required><br><br>
+    <script type="module">
+        // Importar Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-storage.js";
 
-        <label for="correo">Correo Electrónico:</label>
-        <input type="email" id="correo" name="correo" required><br><br>
+        // Configuración de Firebase (usa los datos que copiaste)
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY",
+            authDomain: "TU_AUTH_DOMAIN",
+            projectId: "TU_PROJECT_ID",
+            storageBucket: "TU_STORAGE_BUCKET",
+            messagingSenderId: "TU_MESSAGING_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
 
-        <label for="cv">Adjuntar Hoja de Vida (PDF):</label>
-        <input type="file" id="cv" name="cv" accept=".pdf" required><br><br>
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const storage = getStorage(app);
 
-        <button type="submit">Enviar</button>
-    </form>
+        // Función para subir archivos
+        window.uploadFile = function () {
+            const file = document.getElementById('fileInput').files[0];
+            if (!file) {
+                document.getElementById('status').innerText = "Selecciona un archivo.";
+                return;
+            }
 
-    <script>
-        document.getElementById("cvForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            alert("¡Hoja de vida enviada correctamente! (Falta implementar almacenamiento)");
-        });
+            const storageRef = ref(storage, 'hojas-de-vida/' + file.name);
+            const uploadTask = uploadBytesResumable(storageRef, file);
+
+            uploadTask.on('state_changed',
+                (snapshot) => {
+                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                    document.getElementById('status').innerText = "Subiendo: " + progress.toFixed(2) + "%";
+                },
+                (error) => {
+                    document.getElementById('status').innerText = "Error al subir el archivo.";
+                    console.error(error);
+                },
+                () => {
+                    getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                        document.getElementById('status').innerText = "Archivo subido con éxito: " + downloadURL;
+                    });
+                }
+            );
+        };
     </script>
 </body>
 </html>
