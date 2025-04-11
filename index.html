@@ -8,5 +8,26 @@
 <body>
     <h1>Bienvenido a la Plataforma de Selección</h1>
     <p>Próximamente podrás cargar hojas de vida y evaluar candidatos.</p>
+
+    <h2>Sube tu Hoja de Vida</h2>
+    <form id="cvForm">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required><br><br>
+
+        <label for="correo">Correo Electrónico:</label>
+        <input type="email" id="correo" name="correo" required><br><br>
+
+        <label for="cv">Adjuntar Hoja de Vida (PDF):</label>
+        <input type="file" id="cv" name="cv" accept=".pdf" required><br><br>
+
+        <button type="submit">Enviar</button>
+    </form>
+
+    <script>
+        document.getElementById("cvForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            alert("¡Hoja de vida enviada correctamente! (Falta implementar almacenamiento)");
+        });
+    </script>
 </body>
 </html>
